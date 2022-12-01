@@ -37,6 +37,16 @@ def inplace_change(filename, old_string, new_string):
         s = s.replace(old_string, new_string)
         f.write(s)
 
+
+def tag_dockerimage(docker_image,docker_registry, docker_client): 
+  docker_client.images.pull(docker_image)
+  image_to_tag = docker_client.images.get(docker_image)
+
+  image_to_tag.tag(docker_registry + "/" + docker_image + "-" + str(date.today))
+  new_image = docker_registry + "/" + docker_image + "-" + str(date.today)
+  return new_image
+
+
 def main():
 
   args = parse_args() 
@@ -56,12 +66,12 @@ def main():
   for line in lines: 
     if "image:" in line or "docker.io" in line and "hub" not in line: 
       if "{{" not in line.lstrip().split(":")[1]: 
-        try: 
-          image = line.lstrip().split(":")[1] + ":" + line.lstrip().split(":")[2]
-          docker_image = image.lstrip().strip('\n').strip('"').strip(',').strip('"')
+        try:    
+
+          docker_image = line.split(" ")[5].strip('\n')
 
           if docker_image not in images_list:
-            images_list.append(docker_image)                
+            images_list.append(docker_image)       
 
             print("pulling : "  + docker_image)
 
@@ -74,7 +84,7 @@ def main():
 
               image_to_tag.tag(docker_registry + "/" + without_sha + "-" + str(today))
               new_image = docker_registry + "/" + without_sha + "-" + str(today)
-
+              
               inplace_change(filetoparse, docker_image, new_image)
 
               for log in docker_client.images.push(new_image, stream=True, decode=True): 
