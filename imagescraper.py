@@ -38,15 +38,6 @@ def inplace_change(filename, old_string, new_string):
         f.write(s)
 
 
-def tag_dockerimage(docker_image,docker_registry, docker_client): 
-  docker_client.images.pull(docker_image)
-  image_to_tag = docker_client.images.get(docker_image)
-
-  image_to_tag.tag(docker_registry + "/" + docker_image + "-" + str(date.today))
-  new_image = docker_registry + "/" + docker_image + "-" + str(date.today)
-  return new_image
-
-
 def main():
 
   args = parse_args() 
@@ -87,21 +78,27 @@ def main():
               
               inplace_change(filetoparse, docker_image, new_image)
 
-              for log in docker_client.images.push(new_image, stream=True, decode=True): 
-                print(log)
+              # for log in docker_client.images.push(new_image, stream=True, decode=True): 
+              #   print(log)
 
             else: 
 
               docker_client.images.pull(docker_image)
               image_to_tag = docker_client.images.get(docker_image)
 
-              image_to_tag.tag(docker_registry + "/" + docker_image + "-" + str(today))
-              new_image = docker_registry + "/" + docker_image + "-" + str(today) 
+              print(docker_image)
+
+              if ":" not in docker_image: 
+                image_to_tag.tag(docker_registry + "/" + docker_image + ":" + str(today)) 
+                new_image = docker_registry + "/" + docker_image + ":" + str(today) 
+              else: 
+                new_image = image_to_tag.tag(docker_registry + "/" + docker_image + "-" + str(today))
+                new_image = docker_registry + "/" + docker_image + "-" + str(today) 
 
               inplace_change(filetoparse, docker_image, new_image)
 
-              for log in docker_client.images.push(new_image, stream=True, decode=True): 
-                print(log)
+              # for log in docker_client.images.push(new_image, stream=True, decode=True): 
+              #   print(log)
 
         except IndexError: 
           pass
