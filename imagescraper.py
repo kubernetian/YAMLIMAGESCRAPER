@@ -78,8 +78,8 @@ def main():
               
               inplace_change(filetoparse, docker_image, new_image)
 
-              # for log in docker_client.images.push(new_image, stream=True, decode=True): 
-              #   print(log)
+               for log in docker_client.images.push(new_image, stream=True, decode=True): 
+                 print(log)
 
             else: 
 
@@ -97,8 +97,8 @@ def main():
 
               inplace_change(filetoparse, docker_image, new_image)
 
-              # for log in docker_client.images.push(new_image, stream=True, decode=True): 
-              #   print(log)
+               for log in docker_client.images.push(new_image, stream=True, decode=True): 
+                 print(log)
 
         except IndexError: 
           pass
