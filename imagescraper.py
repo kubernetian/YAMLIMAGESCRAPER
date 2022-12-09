@@ -78,8 +78,8 @@ def main():
               
               inplace_change(filetoparse, docker_image, new_image)
 
-              for log in docker_client.images.push(new_image, stream=True, decode=True): 
-                print(log)
+              # for log in docker_client.images.push(new_image, stream=True, decode=True): 
+              #   print(log)
 
             else: 
 
@@ -92,13 +92,13 @@ def main():
                 image_to_tag.tag(docker_registry + "/" + docker_image + ":" + str(today)) 
                 new_image = docker_registry + "/" + docker_image + ":" + str(today) 
               else: 
-                new_image = image_to_tag.tag(docker_registry + "/" + docker_image + "-" + str(today))
-                new_image = docker_registry + "/" + docker_image + "-" + str(today) 
+                image_to_tag.tag(docker_registry + "/" + docker_image.split(":")[0] + ":" + str(today))
+                new_image = docker_registry + "/" + docker_image.split(":")[0] + ":" + str(today) 
 
               inplace_change(filetoparse, docker_image, new_image)
 
-              for log in docker_client.images.push(new_image, stream=True, decode=True): 
-                print(log)
+              # for log in docker_client.images.push(new_image, stream=True, decode=True): 
+              #   print(log)
 
         except IndexError: 
           pass
